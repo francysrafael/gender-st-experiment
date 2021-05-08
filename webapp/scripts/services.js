@@ -48,8 +48,8 @@ tutorServices.service("configService", function() {
 
 tutorServices.service("User", function($http) {
 
-    const baseURL = '';
-
+    const baseURL = '/francys';
+    
     var resp = {
         id: '',
         testType: "",
