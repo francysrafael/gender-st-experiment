@@ -4,8 +4,6 @@ tutorServices.service("configService", function() {
     
     const baseURL = '/francys';
 
-    const baseURL = '';
-
     var opts = ["default", "stMale", "stFemale"];
 
     var random = Math.floor((Math.random() * 123457)) % 3;
