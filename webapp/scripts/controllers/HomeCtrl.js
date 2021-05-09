@@ -1,6 +1,11 @@
 angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDialog, configService, User, $window) {
     console.log("HomeCtrl ok");
     User.setStartTime(Date.now());
+    
+    var params = $location.search();
+    if (params == undefined || params.respId == undefined || params.respId.replace(/\s/g,'') == '') {
+        $window.location.href = configService.getBaseURL()+'/pre';
+    }
 
     var answers = ['B', 'E', 'E', 'E', 'A', 'B', 'D', 'E', 'B', 'B', 'E', 'B', 'C', 'E', 'A', 'C', 'B', 'D', 'B', 'A'];
     var userAnswer = null;
