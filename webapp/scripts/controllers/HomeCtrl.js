@@ -74,7 +74,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
     $scope.hideAvatar = function() {
         $scope.showAvatar = false;
         $scope.showQuestions = true;
-        updatePoints(10);
+        updatePoints(0);
     };
 
     $scope.getUsers = function() {
@@ -403,8 +403,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
             }, 2500);
         } else {
             playAnimation("red");
-            updatePoints(-5)
-
+            updatePoints(0);
         };
 
         currentQuestion++;
