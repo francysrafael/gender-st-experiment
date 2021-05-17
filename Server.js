@@ -18,6 +18,7 @@ app.post('/save-response', function(req, res, next){
 
   //generates a random id for the participant's response
   var respId = uuid.v1()
+  res.redirect('https://form.jotform.com/211363443899666?respId='+respId);
 
   //data to be saved (participant's response)
   var row = [respId, req.body.startTime, req.body.endTime, req.body.gender, req.body.age, req.body.testType, req.body.pretestPoints, req.body.activityPoints, req.body.posttestPoints, req.body.pre, req.body.post].join(";")+"\n"
