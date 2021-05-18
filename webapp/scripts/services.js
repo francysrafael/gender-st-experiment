@@ -1,16 +1,21 @@
 var tutorServices = angular.module("tutor.services", []);
 
 tutorServices.service("configService", function() {
+    
+    const baseURL = '/francys';
 
     var opts = ["default", "stMale", "stFemale"];
 
     var random = Math.floor((Math.random() * 123457)) % 3;
     var currentTheme = opts[random];
-    // var currentTheme = "default";
 
     var next = false;
 
     var badgeFlags = [false, false, false];
+
+    this.getBaseURL = function() {
+        return baseURL;
+    }
 
     this.setTheme = function(value) {
         console.log("setting theme: " + value);
@@ -40,57 +45,23 @@ tutorServices.service("configService", function() {
 });
 
 tutorServices.service("User", function($http) {
+
+    const baseURL = '/francys';
+    
     var resp = {
+        id: '',
+        testType: "",
         startTime: 0,
         endTime: 0,
-        gender: "",
-        age: "",
-        testType: "",
-        pretestPoints: 0,
-        activityPoints: 0,
-        posttestPoints: 0,
-        pre: [],
-        post: []
+        activityPoints: 0
     };
 
-    this.setGender = function(value) {
-        resp.gender = value;
-    };
+    this.setRespId = function(value) {
+        resp.id = value;
+    }
 
-    this.setAge = function(value) {
-        resp.age = value;
-    };
-
-    this.setTestType = function(value) {
-        resp.testType = value;
-    };
-
-    this.setPretestPoints = function(value) {
-        resp.pretestPoints = value;
-    };
-
-    this.setPosttestPoints = function(value) {
-        resp.posttestPoints = value;
-    };
-
-    this.setActivityPoints = function(value) {
-        resp.activityPoints = value;
-    };
-
-    this.getResponse = function() {
-        return resp;
-    };
-
-    this.getAnxiety = function() {
-        return resp.pretestPoints;
-    };
-
-    this.setPre = function(value) {
-        resp.pre = value;
-    };
-
-    this.setPost = function(value) {
-        resp.post = value;
+    this.setStType = function(value) {
+        resp.stType = value;
     };
 
     this.setStartTime = function(value) {
@@ -101,21 +72,26 @@ tutorServices.service("User", function($http) {
         resp.endTime = value;
     };
 
-    this.save = function() {
+    this.setActivityPoints = function(value) {
+        resp.activityPoints = value;
+    };
+
+    this.getResponse = function() {
+        return resp;
+    };
+
+    this.save = function(fcallback) {
         $http({
-            url: "http://localhost:8080/save-response",
+            url: baseURL+"/save-response/"+resp.id,
             dataType: "json",
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             data: resp
-        }).then(function(response) {
-            // success
-            console.log("response sent!");
-
-        }, function(response) {
-            // failed
+        }).then(function(response) { // success
+            console.log("response sent!"); fcallback();
+        }, function(response) { // failed
             console.error("Failed to submit participant response. " + response);
         });
     };

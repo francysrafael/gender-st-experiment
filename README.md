@@ -3,6 +3,8 @@
 
 This repository contains the code for the experiment described in the article, "[Does gender stereotype threat in gamified educational environments cause anxiety? An experimental study](https://www.sciencedirect.com/science/article/abs/pii/S0360131517301914)."
 
+- The original code was changed to allow manual configuration of pre-test and pos-test questionnaires using http://jotform.com
+
 ### How to cite
 * Albuquerque, J., Bittencourt, I. I., Coelho, J. A., & Silva, A. P. (2017). Does gender stereotype threat in gamified educational environments cause anxiety? An experimental study. Computers & Education, 115, 161-170.
 * Bibtex:
@@ -37,15 +39,11 @@ In order to setup this project for a real use in your research, you will need to
 
 * In general, most textual content can be changed by editing the '*.html' files located in:
 	* `webapp/views/`
-* To change the anxiety questions, refer to:
-	* `webapp/scripts/controllers/PretestCtrl.js`
-	* `webapp/scripts/controllers/PosttestCtrl.js`
-* For server configurations, refer to:
-	* `Server.js`
-	* The server listens to `localhost` at port `8080` by default
-* To change the endpoint URL to where the responses are submitted, refer to:
-	* `webapp/scripts/services.js`
-
+* For server configurations and where the responses are submited, refer to:
+	* `Server.js` - port 
+* For changing the baseURL refer to the files:
+    * `server.js` - const `baseURL`
+    * `webapp/services.js`  - const `baseURL`
 
 ### Step 3: Running the project
 A simple way to run this project is:
@@ -61,84 +59,63 @@ npm install
 npm start
 ```
 
-[Click here](https://drive.google.com/file/d/1YnbAe3Cyg9QkmeYZGYLtSXDwopX4VXaH/view?usp=sharing) to see a tutorial.
-
 ## Guide
 
-### Changing the questions
-In the folder `/webapp/scripts/controllers/` there are two files called `PretestCtrl.js` and `PosttestCtrl.js`. The process is identical in both.
+### Setting the pre-test questionnaire
 
-1. Open the file with a text editor.
-2. Search for `$scope.questions`
-3. This line contains an array with all questions.
- + The questions must be between quotation marks, separated by commas and within the same block delimited by square brackets. E.g:
-```javascript
-$scope.questions = ["Do you like apples?", "And pineapples?", "...even on pizza?"]
-```
-5. Change the number of questions in ``$scope.processAnswers``
+**Step 0**: Define the questionnaire to be applied in the pre-test. Each one of its section may be used to define a specific test, such as DFS-2, anxiety-trait, self-confidence.
 
-### Adding questionaries
-1. Open ``/webapp/views/``, copy the file `posttest.html` and paste it in the same folder, and rename it. (e.g, 'questionary2.html')
- + You can also open it with a text editor to modify the textual content of the page.
-2. Open ``/webapp/scripts/controllers`` and create a file called ``ThenameyouchoseCtrl.js`` (e.g 'Questionary2Ctrl.js').
- + The file must follow this template:
+**Step 1**: Add an input text field named as `ID` to define the response identifier.
 
-```javascript
-// In the following line, 'Questionary2Ctrl' is the name I chose for the controller. It will be important later.
-angular.module('tutor').controller("Questionary2Ctrl", function($scope, $location, User) {
-	$scope.questions = ["How much do you like apples?", "And pineapples?", "...even on pizza?"] // Array of questions. See the guide above
-	$scope.answers = [];
+**Step 2**: Define this text field as a required field.
 
-	$scope.processAnswers = function() {
-		if ($scope.answers.length < $scope.questions.length) {
-			$scope.msg = "Please answer all questions!";
-		} else {
-			var ans = $scope.answers;
+![step 1 and 2 for setting the pre-test](imgs/pre-1-2.png)
 
-			// Invert positive answers
-			// ans[0] = 5 - ans[0]; 	// uncomment to invert the first answer
-			// ans[1] = 5 - ans[1]; 	// uncomment to invert the second answer
-			// ans[5] = 5 - ans[5]; 	// uncomment to invert the sixth answer
 
-			var sum = ans.reduce(add, 0);
+**Step 3**: Define the input text field `ID` as read-only and hide field in the advanced tab of the field.
 
-			function add(a, b) {
-				return parseInt(a) + parseInt(b);
-			}
+![step 3 for setting the pre-test](imgs/pre-3.png)
 
-			var resp = User.getResponse();
 
-			// Keep these if the questionary is part of the pre-test
-			User.setPre(resp.pre.concat(ans)); // Save the answers
-			User.setPretestPoints(resp.pretestPoints + sum); // Save the points
+**Step 4**: Define the unique name for the text field `ID` as `respId` - This unique name will be used to pass the value for the field Id using the request parameter as `?respId=xxxx`.
 
-			// Keep these if the questionary is part of the post-test
-			User.setPost(resp.post.concat(ans)); // Save the answers
-			User.setPosttestPoints(resp.posttestPoints + sum); // Save the points
-			// User.save(); // Submit participant's response to server; Used at the very end of the survey
+![step 4 for setting the pre-test](imgs/pre-4.png)
 
-			$location.path("/home"); // Change it to the page you want the user to be redirected to
-		}
-	};
-});
-```
 
-3. Open ``webapp/index.html`` with a text editor and add this inside the ``<body>`` tag:
-```html
-<script src="scripts/controllers/Questionary2Ctrl.js"></script>
-```
-+ Remember to change 'Questionary2Ctrl' to the name of the file you created in the previous step.
+**Step 5**: Define the URL where the page will be redirected after to submit a response. This URL should be the webserver URL where the tutor app has been installed following by the `/#/home?respId={respId}` <- parameter used to pass the response identificator.
 
-4. Open ``webapp/scripts/app.js`` with a text editor, search for ``routeProvider.when`` and add this in the line immediately above it:
-```javascript
-$routeProvider.
-    when("/questionary2", { // Path
-        templateUrl: "views/questionary2.html", // Path to the file you created in step 1
-        controller: "Questionary2Ctrl" // Name of the controller you created in step 2
-	});
-```
+![step 5 for setting the pre-test](imgs/pre-5.png)
 
-5. Find the controller of the page you want to precede the page you just created at ``/webapp/scripts/controllers`` and change its ``$location.path`` to the path you chose in the previous step.
+
+**Step 6**: In the file Server.js, replace the redirect URL for the pre-test questionnaire URL. The value for the input text field `ID` is defined passing the parameter `?respId=:respId` 
+
+![step 6 for setting the pre-test](imgs/pre-6.png)
+
+### Setting the pos-test questionnaire
+
+**Step 0**: Define the questionnaire to be applied in the pos-test. Each one of its section may be used to define a specific test, such as FSS-2, anxiety-state, self-confidence.
+
+**Step 1**: Add an input text field named as `ID` to define the response identifier.
+
+**Step 2**: Define this text field as a required field.
+
+![step 1 and 2 for setting the pos-test](imgs/pos-1-2.png)
+
+
+**Step 3**: Define the input text field `ID` as read-only and hide field in the advanced tab of the field.
+
+![step 3 for setting the pos-test](imgs/pos-3.png)
+
+
+**Step 4**: Define the unique name for the text field `ID` as `respId` - This unique name will be used to pass the value for the field Id using the request parameter as `?respId=xxxx`.
+
+![step 4 for setting the pos-test](imgs/pos-4.png)
+
+
+**Step 5**: In the file Server.js, replace the redirect URL for the pos-test questionnaire URL. The value for the input text field `ID` is defined passing the parameter `?respId=:respId` 
+
+![step 5 for setting the pos-test](imgs/pos-5.png)
+
 
 ### Frameworks
 This project was made using the following frameworks:

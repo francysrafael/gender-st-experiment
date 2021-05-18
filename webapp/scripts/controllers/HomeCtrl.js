@@ -1,6 +1,11 @@
-angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDialog, configService, User) {
+angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDialog, configService, User, $window) {
     console.log("HomeCtrl ok");
-
+    User.setStartTime(Date.now());
+    
+    var params = $location.search();
+    if (params == undefined || params.respId == undefined || params.respId.replace(/\s/g,'') == '') {
+        $window.location.href = configService.getBaseURL()+'/pre';
+    }
 
     var answers = ['B', 'E', 'E', 'E', 'A', 'B', 'D', 'E', 'B', 'B', 'E', 'B', 'C', 'E', 'A', 'C', 'B', 'D', 'B', 'A'];
     var userAnswer = null;
@@ -39,7 +44,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
         points: 27,
         avatar: "assets/" + configService.getTheme() + "/images/ranking4.png"
     }, {
-        name: "Alex",
+        name: "Você",
         points: totalPoints,
         avatar: userAvatar
     }];
@@ -58,7 +63,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
     $scope.showQuestions = false;
 
     $scope.getUserColor = function(name) {
-        if (name == "Alex")
+        if (name == "Você")
             return "#e0e0e0";
         return "white";
     };
@@ -69,7 +74,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
     $scope.hideAvatar = function() {
         $scope.showAvatar = false;
         $scope.showQuestions = true;
-        updatePoints(10);
+        updatePoints(0);
     };
 
     $scope.getUsers = function() {
@@ -117,7 +122,21 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
     };
 
     $scope.showPosttest = function() {
-        $location.path("/posttest");
+        var params = $location.search();
+        if (params == undefined || params.respId == undefined ||
+            params.respId.replace(/\s/g,'') == '') {
+            $window.location.href = configService.getBaseURL()+'/pre';
+        }
+        
+        User.setRespId(params.respId);
+        User.setActivityPoints(totalPoints);
+        User.setStType(configService.getTheme())
+        User.setEndTime(Date.now());
+
+        User.save(function() {
+            console.log('win.location.href:: '+configService.getBaseURL()+'/pos/'+params.respId);
+            $window.location.href = configService.getBaseURL()+'/pos/'+params.respId;
+        });
     };
 
     $scope.getStars = function() {
@@ -273,7 +292,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
             points: 27,
             avatar: "assets/" + configService.getTheme() + "/images/ranking4.png"
         }, {
-            name: "Alex",
+            name: "Você",
             points: totalPoints,
             avatar: userAvatar
         }];
@@ -384,8 +403,7 @@ angular.module('tutor').controller("HomeCtrl", function($scope, $location, $mdDi
             }, 2500);
         } else {
             playAnimation("red");
-            updatePoints(-5)
-
+            updatePoints(0);
         };
 
         currentQuestion++;
