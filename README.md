@@ -25,6 +25,7 @@ This repository contains the code for the experiment described in the article, "
 
 ## Overview
 This project comprises an experimental environment to study the impact of gender stereotype threat on student anxiety. In summary, the application has the following workflow:
+
 1. Consent form
 2. Pre-test (anxiety assessment)
 3. Gamified activity. There are three different design flavours for this activity: male-stereotyped, female-stereotyped, and neutral. Upon finishing the pre-test, one of the three flavours is randomly selected for the current participant. Please note the activity content does not change across versions (only UI elements like colours and images).
@@ -49,17 +50,25 @@ In order to setup this project for a real use in your research, you will need to
 A simple way to run this project is:
 
 1. Make sure [Node.js](https://nodejs.org/) is installed
+
 2. Go to the project directory
-2. Install the dependencies:
+
+4. Install the dependencies:
 ```
 npm install
 ```
-3. Run the project:
+
+4. Run the project (personal computer):
 ```
-npm start
+npm start Server.js
 ```
 
-## Guide
+4. Run the project using PM2 (on the web server)
+```
+pm2 start Server.js
+```
+
+## Guide to change the pre-test and post-test questionnaire
 
 ### Setting the pre-test questionnaire
 
@@ -115,6 +124,28 @@ npm start
 **Step 5**: In the file Server.js, replace the redirect URL for the pos-test questionnaire URL. The value for the input text field `ID` is defined passing the parameter `?respId=:respId` 
 
 ![step 5 for setting the pos-test](imgs/pos-5.png)
+
+
+### Update the application in the web-server or personal computer
+
+1. Make sure that you are in the project directory
+
+2. Stop the application (only if you are running the project using PM2 on the web server)
+```
+pm2 stop Server.js
+```
+
+3. Update the source code
+```
+git pull
+```
+
+4. Start the application (only if you are running the project using 
+2 on the web server)
+```
+pm2 start Server.js
+```
+
 
 
 ### Frameworks
