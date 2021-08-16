@@ -16,7 +16,7 @@ app.get('/pre(/:respId)?', function (req, res) {
     if (respId == undefined || respId == '' || !respId) {
         respId = uuid.v1();
     }
-    res.redirect('https://form.jotform.com/211447756069665?respId='+respId);
+    res.redirect('https://form.jotform.com/211267678195668?respId='+respId);
 });
 
 app.get('/pos(/:respId)?', function (req, res) {
@@ -24,7 +24,7 @@ app.get('/pos(/:respId)?', function (req, res) {
     if (respId != undefined) {
         respId = respId.replace(/\s/g,'');
         if (respId != '' && respId) {
-            res.redirect('https://form.jotform.com/211447411603647?respId='+respId);
+            res.redirect('https://form.jotform.com/212245217872656?respId='+respId);
         } else {
             console.log('Empty respId');
             res.redirect(baseURL+'/pre');
